@@ -3,10 +3,7 @@ var allDrinks = [];
 var allMainCourses = [];
 var allDeserts = [];
 var allUsers = [];
-var currentUser = null;
-var dishOne = new Dish("Salad", "CountryFrom", "foodGroup", [0,0,0,0,5], [false, true, true, false, false, true], 20, "img/imageIshere");
-
-
+var globalUser = null;
 function User(nameIn, password, countryFrom, countryTo, starterDishes, drinks, maincourses, deserts, flavorProfile, foodGroupProfile){
   this.name = nameIn;
   this.password = password;
@@ -46,37 +43,60 @@ function FoodGroupProfile(thisFruit, thisVeg, thisProtein, thisDairy, thisGrains
   this.grain = thisGrains;
   this.oil = thisOil;
 }
-function generateUser(nameIn, password, countryFrom, countryTo, foodGroupProfile){
-  var newUser = new User(nameIn, password, countryFrom,countryTo,null,null,null,null,null,foodGroupProfile);
-  for(var i = 0; i < allUsers.length; i ++){
-    if(allUsers[i].name == newUser.nameIn){
-      alert("Sorry this name is already Taken.");
-    } else {
-      allUsers.push(newUser);
+function generateUser(nameIn, password, countryFrom, countryTo, allergies){
+  var newUser = new User(nameIn, password, countryFrom,countryTo,null,null,null,null,null,null);
+  var thisFoodGroupProfile = [];
+  //Conditional for Allergies
+  for(var i = 0; i < allergies.length; i++){
+    if(allergies[i] == "Lactose"){
+      thisFoodGroupProfile = [true,true,true,FALSE, true, true];
+    } else if(allergies[i] == "Vegeterian"){
+      thisFoodGroupProfile = [true,true,FALSE,FALSE, true, true];
+    } else if(allergies[i] == "Vegan"){
+      thisFoodGroupProfile = [TRUE,TRUE,false,false, TRUE, FALSE];
     }
   }
+  var arrLength = allUsers.length;
+  for(var i = 0; i < arrLength; i ++){
+    if(allUsers[i].name == newUser.name){
+      alert("Sorry this name is already Taken.");
+      return false;
+    } else {
+      allUsers.push(newUser);
+      globalUser = allUsers[allUsers.length-1];
+      return true;
+    }
+  }
+  if(allUsers.length <= 0){
+    allUsers.push(newUser);
+    globalUser = allUsers[0];
+    return true;
+  }
 }
-function logIn(userName, password){
-  var userIndex = null;
+function login(userName, password){
+  var currentUser = null;
   for(var i = 0; i < allUsers.length; i ++){
-    userIndex = allUsers[i];
-    if(userIndex.name == userName && userIndex.password == password){
-      currentUser = userIndex;
-    } else if(userIndex.name == userName && userIndex.password != password){
+    currentUser = allUsers[i];
+    if(currentUser.name == userName && currentUser.password == password){
+      globalUser = currentUser;
+      return true;
+    } else if(currentUser.name == userName && currentUser.password != password){
       alert("You entered the wrong password");
+      return false;
+    }
   }
 }
 function generatePakistaniFood(){
   //PAKISTANI
-  var one = new Dish("Chicken Biryani", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [false, true, false, true, true], 20, image);
+  var one = new Dish("Chicken Biryani", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [0, 1, 0, 1, 3], 20, image);
+  allMainCourses.push(one5);
+  var one = new Dish ("Chicken Karahi", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [0, 1, 0, 1, 3], 15, image);
   allMainCourses.push(one);
-  var one = new Dish ("Chicken Karahi", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [false, true, false, true, true], 15, image);
-  allMainCourses.push(one);
-  var one = new Dish ("Lassi", "Pakistan", "Drink", [1, 1, 0, 0, 0], [false, true, true, false, false], 3, image);
+  var one = new Dish ("Lassi", "Pakistan", "Drink", [1, 1, 0, 0, 0], [0, 5, 5, 0, 0], 3, image);
   allDrinks.push(one);
-  var one = new Dish ("Ras Malai", "Pakistan", "Desert", [2, 0, 0, 0, 0], [false, false, true, false, false]);
+  var one = new Dish ("Ras Malai", "Pakistan", "Desert", [2, 0, 0, 0, 0], [0, 0, 5, 0, 0]);
   allDeserts.push(one);
-  var one = new Dish ("Cholay", "Pakistan", "Starter", [1, 2, 0, 0, 0], [false, true, false, true, false], 4, image);
+  var one = new Dish ("Cholay", "Pakistan", "Starter", [1, 2, 0, 0, 0], [0, 0, 0, 0, 0], 4, image);
   allStarters.push(one);
 }
 User.prototype.generateFlavorProfile = function(){
@@ -89,7 +109,7 @@ User.prototype.generateFlavorProfile = function(){
   var drinksFlavorArray = [];
   var mainCourseFlavorArray = [];
   var desertsFlavorArray = [];
-  var totalFlavorArray = [];
+  var totalFlavorArray = [0,0,0,0,0];
 
   //Generate average vector for starters
   for(var i = 0; i < startersLength; i ++){
@@ -118,7 +138,6 @@ User.prototype.generateFlavorProfile = function(){
     startersFlavorArray.addArrays(currentDish);
   }
   starterFlavorArray.divideArray(desertsLength);
-  }
   //Generate total flavor profile
   totalFlavorArray.addArrays(starterFlavorArray);
   totalFlavorArray.addArrays(drinksFlavorArray);
@@ -141,7 +160,32 @@ Array.prototype.divideArray = function(constant){
   }
   return outputArray;
 }
-
-
 // generateUser -> display food from their from country(allergies, vegetarian) -> select -> generates flavor/food group profile from their starteres/Drinks/Maincourses/deserts
 // -> Filter any country. ->Display result for to country.
+
+$(document).ready(function(){
+  $("form#createUser").submit(function(event) {
+    event.preventDefault();
+    console.log("createUser");
+    var nameIn = $("#name").val();
+    var passwordIn = $("#password").val();
+    var countryFrom = $("#countryFrom").val();
+    var countryTo = $("#countryTo").val();
+    var allergies = [];
+    $("input:checkbox[name=allergy]:checked").each(function(){
+    allergies.push($(this).val());
+    });
+    if(generateUser(nameIn, passwordIn, countryFrom, countryTo, allergies)){
+      //switch to newUserSection
+    }
+  });
+  $("form#login").submit(function(event) {
+    console.log("login");
+    event.preventDefault();
+    var nameIn = $("#nameLogin").val();
+    var loginIn = $("#passwordLogin").val();
+    if(login(nameIn, loginIn)){
+      //switch to userpage
+    }
+  });
+});
