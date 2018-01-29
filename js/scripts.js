@@ -3,6 +3,9 @@ var allDrinks = [];
 var allMainCourses = [];
 var allDeserts = [];
 var allUsers = [];
+var currentUser = null;
+var dishOne = new Dish("Salad", "CountryFrom", "foodGroup", [0,0,0,0,5], [false, true, true, false, false, true], 20, "img/imageIshere");
+
 
 function User(nameIn, password, countryFrom, countryTo, starterDishes, drinks, maincourses, deserts, flavorProfile, foodGroupProfile){
   this.name = nameIn;
@@ -53,7 +56,29 @@ function generateUser(nameIn, password, countryFrom, countryTo, foodGroupProfile
     }
   }
 }
-
+function logIn(userName, password){
+  var userIndex = null;
+  for(var i = 0; i < allUsers.length; i ++){
+    userIndex = allUsers[i];
+    if(userIndex.name == userName && userIndex.password == password){
+      currentUser = userIndex;
+    } else if(userIndex.name == userName && userIndex.password != password){
+      alert("You entered the wrong password");
+  }
+}
+function generatePakistaniFood(){
+  //PAKISTANI
+  var one = new Dish("Chicken Biryani", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [false, true, false, true, true], 20, image);
+  allMainCourses.push(one);
+  var one = new Dish ("Chicken Karahi", "Pakistan", "Main Course", [0, 1, 0, 0, 0], [false, true, false, true, true], 15, image);
+  allMainCourses.push(one);
+  var one = new Dish ("Lassi", "Pakistan", "Drink", [1, 1, 0, 0, 0], [false, true, true, false, false], 3, image);
+  allDrinks.push(one);
+  var one = new Dish ("Ras Malai", "Pakistan", "Desert", [2, 0, 0, 0, 0], [false, false, true, false, false]);
+  allDeserts.push(one);
+  var one = new Dish ("Cholay", "Pakistan", "Starter", [1, 2, 0, 0, 0], [false, true, false, true, false], 4, image);
+  allStarters.push(one);
+}
 User.prototype.generateFlavorProfile = function(){
   var startersLength = this.starters.length;
   var drinksLength = this.drinks.length;
@@ -102,7 +127,6 @@ User.prototype.generateFlavorProfile = function(){
   totalFlavorArray.divideArray(4);
   return totalFlavorArray;
 }
-
 Array.prototype.addArrays = function(arrayIn) {
   var outputArray = [];
   for(var i = 0; i < arrayIn.length; i ++){
@@ -117,3 +141,7 @@ Array.prototype.divideArray = function(constant){
   }
   return outputArray;
 }
+
+
+// generateUser -> display food from their from country(allergies, vegetarian) -> select -> generates flavor/food group profile from their starteres/Drinks/Maincourses/deserts
+// -> Filter any country. ->Display result for to country.
