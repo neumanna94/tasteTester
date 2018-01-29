@@ -33,7 +33,6 @@ function FlavorProfile(thisSweet, thisSalty, thisBitter, thisSour, thisUmani){
   this.bitter = thisBitter;
   this.sour = thisSour;
   this.umani = thisUmani;
-
 }
 
 function FoodGroupProfile(thisFruit, thisVeg, thisProtein, thisDairy, thisGrains, thisOil){
@@ -43,4 +42,68 @@ function FoodGroupProfile(thisFruit, thisVeg, thisProtein, thisDairy, thisGrains
   this.dairy = thisDairy;
   this.grain = thisGrains;
   this.oil = thisOil;
+}
+
+User.prototype.generateFlavorProfile = function(){
+  var startersLength = this.starters.length;
+  var drinksLength = this.drinks.length;
+  var maincoursesLength = this.maincourses.length;
+  var desertsLength = this.deserts.length;
+  var totalNumberOfDishes = startersLength + drinksLength + maincoursesLength + desertsLength;
+  var starterFlavorArray = [];
+  var drinksFlavorArray = [];
+  var mainCourseFlavorArray = [];
+  var desertsFlavorArray = [];
+  var totalFlavorArray = [];
+
+  //Generate average vector for starters
+  for(var i = 0; i < startersLength; i ++){
+    var currentDish = this.starters.flavProfile[i];
+    startersFlavorArray.addArrays(currentDish);
+  }
+  starterFlavorArray.divideArray(startersLength);
+
+  //Generate average vector for Drinks.
+  for(var i = 0; i < drinksLength; i ++){
+    var currentDish = this.drinks.flavProfile[i];
+    startersFlavorArray.addArrays(currentDish);
+  }
+  starterFlavorArray.divideArray(drinksLength);
+
+  //Generate average vector for Main course.
+  for(var i = 0; i < maincoursesLength; i ++){
+    var currentDish = this.maincourses.flavProfile[i];
+    startersFlavorArray.addArrays(currentDish);
+  }
+  starterFlavorArray.divideArray(maincoursesLength);
+
+  //Generate average vector for Deserts course.
+  for(var i = 0; i < desertsLength; i ++){
+    var currentDish = this.deserts.flavProfile[i];
+    startersFlavorArray.addArrays(currentDish);
+  }
+  starterFlavorArray.divideArray(desertsLength);
+  }
+  //Generate total flavor profile
+  totalFlavorArray.addArrays(starterFlavorArray);
+  totalFlavorArray.addArrays(drinksFlavorArray);
+  totalFlavorArray.addArrays(mainCourseFlavorArray);
+  totalFlavorArray.addArrays(desertsFlavorArray);
+  totalFlavorArray.divideArray(4);
+}
+
+Array.prototype.addArrays = function(arrayIn) {
+  var outputArray = [];
+  for(var i = 0; i < arrayIn.length; i ++){
+    outputArray[i] = arrayIn[i] + this[i];
+  }
+  return outputArray;
+}
+
+Array.prototype.divideArray = function(constant){
+  var outputArray = [];
+  for(var i = 0; i < this.length; i ++){
+    outputArray[i] = this[i]/constant;
+  }
+  return outputArray;
 }
