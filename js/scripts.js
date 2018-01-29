@@ -43,6 +43,16 @@ function FoodGroupProfile(thisFruit, thisVeg, thisProtein, thisDairy, thisGrains
   this.grain = thisGrains;
   this.oil = thisOil;
 }
+function generateUser(nameIn, password, countryFrom, countryTo, foodGroupProfile){
+  var newUser = new User(nameIn, password, countryFrom,countryTo,null,null,null,null,null,foodGroupProfile);
+  for(var i = 0; i < allUsers.length; i ++){
+    if(allUsers[i].name == newUser.nameIn){
+      alert("Sorry this name is already Taken.");
+    } else {
+      allUsers.push(newUser);
+    }
+  }
+}
 
 User.prototype.generateFlavorProfile = function(){
   var startersLength = this.starters.length;
@@ -90,6 +100,7 @@ User.prototype.generateFlavorProfile = function(){
   totalFlavorArray.addArrays(mainCourseFlavorArray);
   totalFlavorArray.addArrays(desertsFlavorArray);
   totalFlavorArray.divideArray(4);
+  return totalFlavorArray;
 }
 
 Array.prototype.addArrays = function(arrayIn) {
@@ -99,7 +110,6 @@ Array.prototype.addArrays = function(arrayIn) {
   }
   return outputArray;
 }
-
 Array.prototype.divideArray = function(constant){
   var outputArray = [];
   for(var i = 0; i < this.length; i ++){
